@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 //const { use } = require("../routes");
 
-const userSchema = new Schema({
+const UserSchema = new Schema({
     username: {
         type: String,
         required: true,
@@ -12,18 +12,18 @@ const userSchema = new Schema({
         type: String,
         required: true,
         unique: true,
-        match: [/.+@.+\..+/, "Must match an email address!!!!"],
+        match: [/.+@.+\..+/],
     },
     thoughts: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'thought',
+            ref: "Thought",
         },
     ],
     friends: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'user',
+            ref: "User",
         },
     ],
 },{
@@ -33,10 +33,10 @@ const userSchema = new Schema({
     id: false,
 });
 
-userSchema.virtual("friendCount").get(function() {
+UserSchema.virtual("friendCount").get(function() {
     return this.friends.length;
 });
 
-const User = model("User", userSchema);
+const User = model("User", UserSchema);
 
 module.exports = User;
