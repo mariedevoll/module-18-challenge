@@ -16,7 +16,7 @@ module.exports = {
 //get a thought
     async getAThought(req, res) {
         try {
-            const thought = await Thought.findOne({ _id: req.params.thoughtId }) //populating username
+            const thought = await Thought.findOne({ _id: req.params.id }) //populating username
             if(!thought) {
                 return res.status(404).json({ message: 'there is no thought with that id'});
             }
@@ -46,10 +46,15 @@ module.exports = {
 //delete a thought
     async deleteThought(req, res) {
         try {
-            const terminateThought = await Thought.findOneAndDelete({ _id: req.params.thoughtId });
-            await User.findOneAndUpdate(
+            const terminateThought = await Thought.findOneAndDelete({ _id: req.params.id });
+         /*   await User.findOneAndUpdate(
                 { _id: req.body.userId },
                 { $push: {thoughts: newThought._id} },
+                { new: true }
+            ); */
+            await User.findOneAndUpdate(
+                { thoughts: req.params.id },
+                { $pull: { thoughts: req.params.id} },
                 { new: true }
             );
             if (!terminateThought) {
@@ -66,7 +71,7 @@ module.exports = {
     async updateThought(req, res) {
         try {
             const changeThought = await Thought.findOneAndUpdate(
-                { _id: req.params.thoughtId },
+                { _id: req.params.id },
                 { $set: req.body },
                 { runValidators: true, new: true }
             );
@@ -83,7 +88,7 @@ module.exports = {
     async createReaction(req, res) {
         try {
             const newReaction = await Thought.findOneAndUpdate(
-                { _id: req.params.thoughtId },
+                { _id: req.params.id },
                 { $addToSet: {reactions: req.body} },
                 { runValidators: true, new: true }
             );
@@ -98,7 +103,7 @@ module.exports = {
     async deleteReaction(req, res) {
         try {
             const terminateReaction = await Thought.findByIdAndUpdate(
-                { _id: req.params.thoughtId },
+                { _id: req.params.id },
                 { $pull: {reactions: { reactionId: req.params.reactionId} } },
                 { runValidators: true, new: true }
             );
